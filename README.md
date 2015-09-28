@@ -1,2 +1,2 @@
-# TENET_plot_group_network
+# TENET_group_network
 Quantlet TENET paper
