@@ -6,7 +6,7 @@
 # Description : Plot a graph for group network.
 # −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # Keywords : network, connectedness, spillover effects,
-# contagion effects, adjacency matrix
+# contagion effects, adjacency matrix, tail event
 # −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # See also : 
 # −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
@@ -27,8 +27,7 @@ library(abind)
 library(qgraph)
 ##install.packages("stats")
 library(stats)
-setwd("C:/Users/Lining Yu/Dropbox/Doctor/TENET/TENET Codes/2015_08_28 tenet quantnet codes")
-setwd("C:/Users/yulining.hub/Dropbox/Doctor/TENET/TENET Codes/2015_08_28 tenet quantnet codes")
+
 ## read firms' data
 f        = read.csv("100_firms_returns_and_macro_2015-04-15.csv")
 ## read the connectedness matrix based on estimated paritial derivatives on 12_06_2009 as an example
