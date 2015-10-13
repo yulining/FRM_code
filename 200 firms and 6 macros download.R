@@ -2,14 +2,14 @@
 # Project:     FRM
 #---------------------------------------------------------
 # QuantLet : FRM_download_data
-#---------------------------------------------------------ˆ’
+#---------------------------------------------------------
 # Published in : FRM: Financial Risk Meter
-#---------------------------------------------------------ˆ’
+#---------------------------------------------------------
 # Description : download the data of 206 variables
 # from Yahoo finance and Feferal reserve board.
-# --------------------------------------------------------ˆ’
-# Keywords : automatic, prices, returns, Yahoo Finance,
-# Feferal Reserve Board, Macro variable
+# --------------------------------------------------------
+# Keywords : automatic, VaR, returns, Yahoo Finance,
+# Feferal Reserve Board, quantile regression, lasso, risk
 #---------------------------------------------------------
 # See also :
 #---------------------------------------------------------
@@ -21,13 +21,11 @@
 #----------------------------------------------------------
 
 # clear all variables
-rm(list = ls(all = TRUE))
+rm(list                      = ls(all = TRUE))
 graphics.off()
 #######################################################################
 ###################### Part 1 download 200 firms ######################
 ########################2##############################################
-rm(list                      = ls( all = TRUE)) 
-
 ## set the working directory
 setwd("//clapton.wiwi.hu-berlin.de/frm/codes")
 
@@ -37,7 +35,7 @@ companylist                  = read.csv("companylist 2015.csv") # for symbols in
 # http://www.nasdaq.com/screening/companies-by-industry.aspx?industry=Finance&sortname=country&sorttype=1
 
 # Array with firm names
-firm_names                   = as.character(companylist[,1]) # sorterd by market capitalization
+firm_names                   = as.character(companylist[, 1]) # sorterd by market capitalization
 
 # Now, Yahoo Finance
 library(quantmod)
@@ -47,11 +45,8 @@ a_m                          = "2006-12-28" #### starting date for macro variabl
 b                            = Sys.Date() #### date for 200 firms
 b_m                          = Sys.Date()-1 #### date for macro variables, 1 day lag
 
-example                      = getSymbols(firm_names[1], src="yahoo", from = a, to = b, auto.assign = FALSE) # calls Yahoo Finance through internet
-
-example                      = getSymbols(firm_names[1], src="yahoo", from = a, to = b, auto.assign = FALSE) # calls Yahoo Finance through internet
-
-example_time                 = as.matrix(example[-1,1])
+example                      = getSymbols(firm_names[1], src = "yahoo", from = a, to = b, auto.assign = FALSE) # calls Yahoo Finance through internet
+example_time                 = as.matrix(example[-1, 1])
 time_points                  = nrow(as.data.frame(example))
 
 # setting parameters for the loop
@@ -74,7 +69,7 @@ for (i in 1: n) {
 	if (firm_names[i] %in% bad_list) {next}
 	
   # 2) check whether the complete time series is available, if not skip and print name
-  prices                     = getSymbols(firm_names[i], src="yahoo", from=a, to=b, auto.assign=FALSE)
+  prices                     = getSymbols(firm_names[i], src = "yahoo", from = a, to = b, auto.assign = FALSE)
 	if (nrow(prices)           != time_points) {
 		# skip this firm if different length of time points
 		print(firm_names[i])
@@ -82,8 +77,8 @@ for (i in 1: n) {
 	}
   
 	# 3) get data and save in firms_closed_price
-	prices_data = as.data.frame(prices)
-	firms_closed_price[,i]     = as.matrix(prices_data[,6])
+	prices_data                = as.data.frame(prices)
+	firms_closed_price[, i]    = as.matrix(prices_data[, 6])
 	print(s)
 	s                          = s + 1 # increase counter
 	
@@ -98,7 +93,7 @@ length(cs[cs > 0])                                          # number of firms fo
 
 # taking submatrix from firms_closed_price with 200 companies
 collected_firms              = names(cs[cs > 0])
-data_firms                   = firms_closed_price[,collected_firms]
+data_firms                   = firms_closed_price[, collected_firms]
 
 # transform the company_prices_200 into log returns
 returns_final                = diff(log(data_firms))
@@ -109,17 +104,17 @@ rownames(returns_final)      = rownames(example_time)
 #######################################################################
 macro_names                  = c("^VIX","^GSPC","IYR","DGS3MO","DGS10","DBAA")
 #### Part 2.1: download VIX, GSPC (S&P500) and IYR (iShares Dow Jones US Real Estate) from yahoo finance 
-VIX                          = as.matrix(getSymbols(macro_names[1], src="yahoo", from=a_m, to=b_m, auto.assign=FALSE)[,6])
-GSPC                         = as.matrix(getSymbols(macro_names[2], src="yahoo", from=a_m, to=b_m, auto.assign=FALSE)[,6])
-IYR                          = as.matrix(getSymbols(macro_names[3], src="yahoo", from=a_m, to=b_m, auto.assign=FALSE)[,6])
+VIX                          = as.matrix(getSymbols(macro_names[1], src = "yahoo", from = a_m, to = b_m, auto.assign = FALSE)[, 6])
+GSPC                         = as.matrix(getSymbols(macro_names[2], src = "yahoo", from  =a_m, to = b_m, auto.assign = FALSE)[, 6])
+IYR                          = as.matrix(getSymbols(macro_names[3], src = "yahoo", from = a_m, to = b_m, auto.assign = FALSE)[, 6])
 
 # data of first three variables
-data_ft                      = as.matrix(cbind(VIX,GSPC,IYR))
+data_ft                      = as.matrix(cbind(VIX, GSPC, IYR))
 
 ### transform GSPC and IYR into log returns ###
-returns_m                    = diff(log(data_ft[,-1])) # without VIX
-First_three_macro_in         = cbind(data_ft[-1,1],returns_m)
-First_three_macro            = First_three_macro_in[-nrow(First_three_macro_in),] # remove last row
+returns_m                    = diff(log(data_ft[, -1])) # without VIX
+First_three_macro_in         = cbind(data_ft[-1, 1],returns_m)
+First_three_macro            = First_three_macro_in[-nrow(First_three_macro_in), ] # remove last row
 
 #### Part 2.2: download the other 3 macro from Federal reserve Bank #####
 # measure the length of first three macro variables, so that the last three variables have the same length with them.
@@ -132,7 +127,7 @@ ThreeMT                      = as.numeric(as.matrix(read.csv("https://research.s
 True_ThreeMT                 = na.omit(ThreeMT)
 lt                           = as.matrix(True_ThreeMT)
 # set the length of this variable the same as the first three variables, take last c values
-output_ThreeMT               = as.matrix(lt[(length(lt)-c):length(lt),1])
+output_ThreeMT               = as.matrix(lt[(length(lt)-c):length(lt), 1])
 # calculate the 3 month Treasury change
 change_ThreeMT               = diff(output_ThreeMT)
 
@@ -141,7 +136,7 @@ change_ThreeMT               = diff(output_ThreeMT)
 Tenyield                     = as.numeric(as.matrix(read.csv("https://research.stlouisfed.org/fred2/series/DGS10/downloaddata/DGS10.csv", na.strings =".")[,-1]))
 True_Tenyield                = na.omit(Tenyield)
 lyc                          = as.matrix(True_Tenyield)
-output_Tenyield              = as.matrix(lyc[(length(lyc)-c):length(lyc),1])
+output_Tenyield              = as.matrix(lyc[(length(lyc)-c):length(lyc), 1])
 # calculate Slope of yield curve
 slope_yield                  = as.matrix(output_Tenyield-output_ThreeMT)[-1]
 
@@ -150,13 +145,13 @@ slope_yield                  = as.matrix(output_Tenyield-output_ThreeMT)[-1]
 DayBAA                       = as.numeric(as.matrix(read.csv("https://research.stlouisfed.org/fred2/series/DBAA/downloaddata/DBAA.csv", na.strings =".")[,-1]))
 True_DayBAA                  = na.omit(DayBAA)
 lc                           = as.matrix(True_DayBAA)
-output_True_DayBAA           = as.matrix(lc[(length(lc)-c):length(lc),1])
+output_True_DayBAA           = as.matrix(lc[(length(lc)-c):length(lc), 1])
 # calculate credit spread
 credit_spread                = as.matrix(output_True_DayBAA-output_Tenyield)[-1]
 
 ### combine all the macro variables ###
-rest_three_macro             = cbind(change_ThreeMT,slope_yield,credit_spread)
-six_macro                    = cbind(First_three_macro,rest_three_macro)
+rest_three_macro             = cbind(change_ThreeMT, slope_yield, credit_spread)
+six_macro                    = cbind(First_three_macro, rest_three_macro)
 
 ### scale variables to [0,1] ###
 scale_macro                  = six_macro
@@ -165,9 +160,9 @@ nncol                        = ncol(scale_macro)
 m                            = matrix(0, nnrow, nncol)
 for(i in 1:nncol)
   {
-    m[,i]                    = (scale_macro[,i] - min(scale_macro[,i]))/(max(scale_macro[,i])-min(scale_macro[,i]))
+    m[, i]                   = (scale_macro[, i] - min(scale_macro[, i]))/(max(scale_macro[, i])-min(scale_macro[, i]))
   }
-colnames(m)                  = c("^VIX","^GSPC","IYR","3MTCM","Yield","Credit")
+colnames(m)                  = c("^VIX", "^GSPC", "IYR", "3MTCM", "Yield", "Credit")
 
 #######################################################################
 ########### Part 3 combine 200 firms and 6 macro variables ############
@@ -175,14 +170,13 @@ colnames(m)                  = c("^VIX","^GSPC","IYR","3MTCM","Yield","Credit")
 
 firms_data                   = returns_final
 macro_data                   = m
-full_data                    = cbind(firms_data,macro_data)
-
-full_data <- round(full_data, digits = 9)
-Date_wf= strptime(as.character(rownames(full_data)),  "%Y-%m-%d")
-Date_rf=format(Date_wf,"%d/%m/%Y")
-Date=as.data.frame(Date_rf)
-names(Date)="Date"
-rownames(full_data)=NULL
-final_data= cbind(Date,full_data)
+full_data                    = cbind(firms_data, macro_data)
+full_data                    = round(full_data, digits = 9)
+Date_wf                      = strptime(as.character(rownames(full_data)),  "%Y-%m-%d")
+Date_rf                      = format(Date_wf,"%d/%m/%Y")
+Date                         = as.data.frame(Date_rf)
+names(Date)                  = "Date"
+rownames(full_data)          = NULL
+final_data                   = cbind(Date, full_data)
 setwd("//clapton.wiwi.hu-berlin.de/frm/data")
-write.csv(format(final_data, scientific = FALSE),file=paste("200_firms_returns_and_scaled_macro_",b,".csv",sep=""),row.names=FALSE,quote=FALSE)
+write.csv(format(final_data, scientific = FALSE), file = paste("200_firms_returns_and_scaled_macro_", b, ".csv", sep = ""), row.names = FALSE, quote = FALSE)
