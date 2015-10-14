@@ -105,7 +105,7 @@ rownames(returns_final)      = rownames(example_time)
 macro_names                  = c("^VIX","^GSPC","IYR","DGS3MO","DGS10","DBAA")
 #### Part 2.1: download VIX, GSPC (S&P500) and IYR (iShares Dow Jones US Real Estate) from yahoo finance 
 VIX                          = as.matrix(getSymbols(macro_names[1], src = "yahoo", from = a_m, to = b_m, auto.assign = FALSE)[, 6])
-GSPC                         = as.matrix(getSymbols(macro_names[2], src = "yahoo", from  =a_m, to = b_m, auto.assign = FALSE)[, 6])
+GSPC                         = as.matrix(getSymbols(macro_names[2], src = "yahoo", from = a_m, to = b_m, auto.assign = FALSE)[, 6])
 IYR                          = as.matrix(getSymbols(macro_names[3], src = "yahoo", from = a_m, to = b_m, auto.assign = FALSE)[, 6])
 
 # data of first three variables
