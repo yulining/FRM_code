@@ -192,6 +192,6 @@ names(Date)         = "Date"
 rownames(full_data) = NULL
 final_data          = cbind(Date, full_data)
 # change the working directory to save the data
-setwd("//clapton.wiwi.hu-berlin.de/frm/data")
+#setwd("//clapton.wiwi.hu-berlin.de/frm/data")
 write.csv(format(final_data, scientific = FALSE), file = paste("200_firms_returns_and_scaled_macro_", 
   b, ".csv", sep = ""), row.names = FALSE, quote = FALSE) 
