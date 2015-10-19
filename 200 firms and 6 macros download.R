@@ -172,7 +172,7 @@ six_macro        = cbind(First_three_macro, rest_three_macro)
 # scale variables to [0,1]
 scale_macro = six_macro
 nnrow       = nrow(scale_macro)
-nncol ´     = ncol(scale_macro)
+nncol       = ncol(scale_macro)
 m           = matrix(0, nnrow, nncol)
 for (i in 1:nncol) {
   m[, i] = (scale_macro[, i] - min(scale_macro[, i]))/(max(scale_macro[, i]) - 
